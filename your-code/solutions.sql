@@ -20,7 +20,7 @@ ORDER BY sum((titles.price * sales.qty * titles.royalty) / (100 * titleauthor.ro
 # 3
 ## Temp Tables:
 create temporary table royalties_per_title_author_1_summay
-select titles.title_id AS AUTHOR_ID, titleauthor.au_id AS TITLE_ID,
+select titles.title_id AS TITLE_ID, titleauthor.au_id AS AUTHOR_ID, 
 (titles.price * sales.qty * titles.royalty) / (100 * titleauthor.royaltyper / 100) AS SALES_ROYALTY
 from titles
 inner join titleauthor on titleauthor.title_id = titles.title_id

@@ -67,4 +67,5 @@ SELECT selection.au_id, SUM(selection.total_royalties)+ titles.advance AS profit
 		GROUP BY title_id, au_id) selection	
 	LEFT JOIN titles on titles.title_id = selection.title_id
     GROUP BY selection.au_id
-    ORDER BY au_id; 
+    ORDER BY profit DESC
+    LIMIT 3; 

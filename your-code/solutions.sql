@@ -27,5 +27,17 @@ group by au_id
 ORDER BY profits DESC LIMIT 3;
 
 # Challenge 3
+DROP TABLE IF EXISTS most_profiting_authors;
 
-# not completed yet. Many doubts.
+CREATE TABLE most_profiting_authors (
+Author_ID VARCHAR(45), 
+Profits decimal(19,4),
+PRIMARY KEY (Author_ID));
+
+INSERT INTO most_profiting_authors 
+    (Author_ID, Profits)
+VALUES 
+(486-29-1786, 4033359.882000000000),
+(998-72-3567, 4026719.911500000000),
+(213-46-8915, 4025391.917400000000);
+

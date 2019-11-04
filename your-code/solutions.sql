@@ -69,3 +69,11 @@ SELECT selection.au_id, SUM(selection.total_royalties)+ titles.advance AS profit
     GROUP BY selection.au_id
     ORDER BY profit DESC
     LIMIT 3; 
+    
+#CHALLENGE 3
+CREATE TABLE most_profiting_authors(
+	au_id VARCHAR(11),
+    profits INT,
+    FOREIGN KEY (au_id)
+		REFERENCES authors(au_id)
+);

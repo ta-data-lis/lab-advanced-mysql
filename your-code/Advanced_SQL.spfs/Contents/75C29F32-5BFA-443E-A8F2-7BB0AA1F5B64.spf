@@ -1,0 +1,413 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ContentFilters</key>
+	<dict/>
+	<key>auto_connect</key>
+	<true/>
+	<key>data</key>
+	<dict>
+		<key>connection</key>
+		<dict>
+			<key>database</key>
+			<string>publications</string>
+			<key>host</key>
+			<string>127.0.0.1</string>
+			<key>kcid</key>
+			<string>-5509486075542794884</string>
+			<key>name</key>
+			<string>localhost</string>
+			<key>rdbms_type</key>
+			<string>mysql</string>
+			<key>sslCACertFileLocation</key>
+			<string></string>
+			<key>sslCACertFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslCertificateFileLocation</key>
+			<string></string>
+			<key>sslCertificateFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslKeyFileLocation</key>
+			<string></string>
+			<key>sslKeyFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>type</key>
+			<string>SPTCPIPConnection</string>
+			<key>useSSL</key>
+			<integer>0</integer>
+			<key>user</key>
+			<string>root</string>
+		</dict>
+		<key>session</key>
+		<dict>
+			<key>connectionEncoding</key>
+			<string>utf8mb4</string>
+			<key>contentFilterV2</key>
+			<dict>
+				<key>children</key>
+				<array/>
+				<key>filterClass</key>
+				<string>groupNode</string>
+				<key>isConjunction</key>
+				<true/>
+			</dict>
+			<key>contentPageNumber</key>
+			<integer>1</integer>
+			<key>contentSelection</key>
+			<data>
+			YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFy
+			Y2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJX
+			TlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAF
+			gAdUdHlwZVRyb3dzXxAdU2VsZWN0aW9uRGV0YWlsVHlwZU5TSW5k
+			ZXhTZXTSFwsYGVxOU1JhbmdlQ291bnQQAIAG0hscHR5aJGNsYXNz
+			bmFtZVgkY2xhc3Nlc1pOU0luZGV4U2V0oh8gWk5TSW5kZXhTZXRY
+			TlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVk
+			QXJjaGl2ZXLRJidUZGF0YYABAAgAEQAaACMALQAyADcAQABGAE0A
+			VQBgAGcAagBsAG4AcQBzAHUAdwB8AIEAoQCmALMAtQC3ALwAxwDQ
+			ANsA3gDpAPIA9wEEAQcBGQEcASEAAAAAAAACAQAAAAAAAAAoAAAA
+			AAAAAAAAAAAAAAABIw==
+			</data>
+			<key>contentSortCol</key>
+			<string>profits</string>
+			<key>contentSortColIsAsc</key>
+			<true/>
+			<key>contentViewport</key>
+			<string>{{0, 0}, {1222, 702}}</string>
+			<key>isToolbarVisible</key>
+			<true/>
+			<key>queries</key>
+			<string># Lab | Advanced MySQL
+
+## Introduction
+## Challenge 1 - Most Profiting Authors
+# In order to solve this problem, it is important for you to keep the following points in mind:
+#* In table `sales`, a title can appear several times. The royalties need to be calculated for each sale.
+#* Despite a title can have multiple `sales` records, the advance must be calculated only once for each title.
+#* In your eventual solution, you need to sum up the following profits for each individual author:
+    #* All advances which is calculated exactly once for each title.
+    #* All royalties in each sale.
+
+# Step 1: Calculate the royalties of each sales for each author
+# Write a SELECT query to obtain the following output:
+
+# Title ID
+SELECT titles.title_id, titles.price, titles.royalty
+FROM titles;
+
+# AuthorID
+SELECT titleauthor.au_id, titleauthor.royaltyper
+FROM titleauthor;
+
+# Combining everything
+SELECT titles.title_id, titles.price, titles.royalty, titleauthor.au_id, titleauthor.royaltyper, SUM(qty) AS title_quantity
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id;
+
+# Royalty of each sale for each author
+# sales_royalty = titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100
+
+SELECT titles.title_id, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id; 
+
+### Step 2: Aggregate the total royalties for each title for each author
+# Using the output from Step 1, write a query to obtain the following output:
+
+SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id; 
+
+### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, SUM(advance + royalty) AS total_profit
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY au_id
+ORDER BY au_id DESC
+LIMIT 3; 
+
+## Challenge 2 - Alternative Solution
+# In the previous challenge, you may have developed your solution in either of the following ways:
+# Either way you have used, we'd like you to try the other way. Include your alternative solution in `solutions.sql`.
+
+CREATE TEMPORARY TABLE publications.profit_summary
+SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id; 
+
+SELECT * FROM publications.profit_summary;
+
+SELECT au_id, SUM(advance + royalty) AS total_profit
+FROM publications.profit_summary
+GROUP BY au_id
+ORDER BY au_id DESC
+LIMIT 3;
+
+## Challenge 3
+#Elevating from your solution in Challenge 1 &amp; 2, create a permanent table named `most_profiting_authors` to hold the data about the most profiting authors. The table should have 2 columns:
+#* `au_id` - Author ID
+#* `profits` - The profits of the author aggregating the advances and royalties
+
+CREATE TABLE publications.most_profiting_authors
+SELECT au_id, SUM(advance + royalty) AS profits
+FROM publications.profit_summary
+GROUP BY au_id;</string>
+			<key>table</key>
+			<string>most_profiting_authors</string>
+			<key>view</key>
+			<string>SP_VIEW_CUSTOMQUERY</string>
+			<key>windowVerticalDividerPosition</key>
+			<real>214</real>
+		</dict>
+	</dict>
+	<key>encrypted</key>
+	<false/>
+	<key>format</key>
+	<string>connection</string>
+	<key>queryFavorites</key>
+	<array/>
+	<key>queryHistory</key>
+	<array>
+		<string>## Challenge 3
+#Elevating from your solution in Challenge 1 &amp; 2, create a permanent table named `most_profiting_authors` to hold the data about the most profiting authors. The table should have 2 columns:
+#* `au_id` - Author ID
+#* `profits` - The profits of the author aggregating the advances and royalties
+
+CREATE TABLE publications.most_profiting_authors
+SELECT au_id, SUM(advance + royalty) AS profits
+FROM publications.profit_summary
+GROUP BY au_id</string>
+		<string>## Challenge 3
+#Elevating from your solution in Challenge 1 &amp; 2, create a permanent table named `most_profiting_authors` to hold the data about the most profiting authors. The table should have 2 columns:
+#* `au_id` - Author ID
+#* `profits` - The profits of the author aggregating the advances and royalties
+
+SELECT au_id, SUM(advance + royalty) AS total_profit
+FROM publications.profit_summary
+GROUP BY au_id
+ORDER BY au_id DESC</string>
+		<string>SELECT * FROM publications.profit_summary</string>
+		<string>## Challenge 2 - Alternative Solution
+# In the previous challenge, you may have developed your solution in either of the following ways:
+# Either way you have used, we'd like you to try the other way. Include your alternative solution in `solutions.sql`.
+
+CREATE TEMPORARY TABLE publications.profit_summary
+SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id</string>
+		<string>SELECT au_id, SUM(advance + royalty) AS total_profit
+FROM publications.profit_summary
+GROUP BY au_id
+ORDER BY au_id DESC
+LIMIT 3</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, SUM(advance + royalty) AS total_profit
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY au_id
+ORDER BY au_id DESC
+LIMIT 3</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, SUM(advance + royalty) AS total_profit
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY au_id</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, (advance + royalty) AS total_profit
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY au_id</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, (advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, (advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY au_id
+ORDER BY au_id DESC
+LIMIT 3</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id, (titles.advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY au_id
+ORDER BY au_id DESC
+LIMIT 3</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT au_id #(titles.advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT titleauthor.au_id #(titles.advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT titleauthor.au_id, (titles.advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT titleauthor.au_id, (titles.advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+GROUP BY titleauthor.au_id
+ORDER BY titleauthor.au_id DESC
+LIMIT 3</string>
+		<string>### Step 3: Calculate the total profits of each author
+# Now that each title has exactly one row for each author where the advance and royalties are available, we are ready to obtain the eventual output. Using the output from Step 2, write a query to obtain the following output:
+# Author ID
+# Profits of each author by aggregating the advance and total royalties of each title
+# Sort the output based on a total profits from high to low, and limit the number of rows to 3.
+
+SELECT titleauthor.au_id, (titles.advance + royalty)
+FROM (SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id) summary
+ORDER BY titleauthor.au_id DESC
+LIMIT 3</string>
+		<string>### Step 2: Aggregate the total royalties for each title for each author
+# Using the output from Step 1, write a query to obtain the following output:
+
+SELECT titles.title_id, titles.advance, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id</string>
+		<string># Royalty of each sale for each author
+# sales_royalty = titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100
+      
+SELECT titles.title_id, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id</string>
+		<string># Royalty of each sale for each author
+# The formular is:
+# sales_royalty = titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100
+      
+SELECT titles.title_id, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id</string>
+		<string># Royalty of each sale for each author
+# The formular is:
+        ```
+        sales_royalty = titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100
+        ```
+
+SELECT titles.title_id, (titles.price * SUM(qty) * (titles.royalty/100) * (titleauthor.royaltyper/100)) AS royalty, titleauthor.au_id
+FROM titles
+INNER JOIN sales ON sales.title_id = titles.title_id
+INNER JOIN titleauthor ON titleauthor.title_id = titles.title_id
+GROUP BY title_id, au_id</string>
+	</array>
+	<key>rdbms_type</key>
+	<string>mysql</string>
+	<key>rdbms_version</key>
+	<string>8.0.17</string>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>

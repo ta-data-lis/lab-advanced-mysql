@@ -1,10 +1,10 @@
-![IronHack Logo](https://s3-eu-west-1.amazonaws.com/ih-materials/uploads/upload_d5c5793015fec3be28a63c4fa3dd4d55.png)
+<img src="https://bit.ly/2VnXWr2" alt="Ironhack Logo" width="100"/>
 
 # Lab | Advanced MySQL
 
 ## Introduction
 
-In this lab you will practice MySQL Subqueries, Temp Tables, and Action Queries. **You will use the `publications` database**. You can find it in Ironhack's database.
+In this lab you will practice MySQL Subqueries, Temp Tables, and Action Queries. **You will use the `publications` database**. You can find it in this repository.
 
 Create a `solutions.sql` file in the `your-code` directory to record your solutions to all challenges.
 

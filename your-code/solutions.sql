@@ -1,7 +1,7 @@
 # Advanced MySQL - Ricardo Zacarias
 
 -- Challenge 1 - Most Profiting Authors
-select royalty_calc.au_id, sum(royalty_calc.sales_royalty) + royalty_calc.advance profit
+select royalty_calc.au_id, round(sum(royalty_calc.sales_royalty) + royalty_calc.advance, 2) profit
 from (
 select ta.au_id, ta.title_id, t.advance, t.price * s.qty * (t.royalty/100) * (ta.royaltyper/100) sales_royalty
 from titleauthor ta
@@ -32,3 +32,15 @@ select ap.au_id, sum(ap.sales_royalty) + ap.advance profit
 from author_profit ap
 group by ap.au_id, ap.title_id
 order by profit desc;
+
+
+
+
+
+
+
+
+
+
+
+

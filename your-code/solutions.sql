@@ -17,7 +17,7 @@ describe  royalty_a_t;
 
 select royalty_a_t.au_id, sum(sales_royalty + royalty_a_t.advance) as profits
 from royalty_a_t
-group by  royalty_a_t.au_id, royalty_a_t.title_id
+group by  royalty_a_t.au_id 
 order by profits desc
 limit 3;
 
@@ -35,7 +35,7 @@ limit 3;
 
 #Challenge 3
 create table most_profiting_authors
-select au_id, sum((t.price * s.qty * t.royalty / 100 * ta.royaltyper / 100)+advance) as profits
+select au_id, sum((t.price * s.qty * t.royalty / 100 * ta.royaltyper / 100)+ advance) as profits                  
 from titleauthor as ta
 left join titles as t on ta.title_id = t.title_id 
 left join sales  as s on t.title_id = s.title_id

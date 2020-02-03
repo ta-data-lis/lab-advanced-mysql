@@ -69,7 +69,7 @@ LIMIT 3;
 SELECT *
 FROM step3;
 
-#chalenge 3
+#chalenge 3 ##Make table queries -  LESSON ACTION QUERIES 
 
 CREATE TABLE most_profiting_authors (id INT PRIMARY KEY AUTO_INCREMENT, au_id VARCHAR(20), total_revenue FLOAT);
 

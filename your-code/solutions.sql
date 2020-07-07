@@ -6,7 +6,8 @@ CREATE TEMPORARY TABLE publications.royalties_per_sale
 SELECT 
 t.title_id AS 'TITLE_ID',
 a.au_id AS 'AUTHOR_ID',
-(t.price * sal.qty * t.royalty / 100 * ta.royaltyper / 100) AS 'ROYALTY'
+(t.price * sal.qty * t.royalty / 100 * ta.royaltyper / 100) AS 'ROYALTY',
+t.advance
 FROM publications.sales AS sal
 INNER JOIN publications.titleauthor as ta
 ON sal.title_id = ta.title_id
@@ -20,7 +21,7 @@ CREATE TEMPORARY TABLE publications.royalties_per_title
 SELECT 
 AUTHOR_ID, 
 TITLE_ID,
-SUM(ROYALTY) AS 'ROYALTY_PER_TITLE'
+SUM(ROYALTY + advance) AS 'ROYALTY_PER_TITLE'
 FROM publications.royalties_per_sale
 GROUP BY AUTHOR_ID, TITLE_ID;
 
@@ -46,12 +47,13 @@ FROM
 	(SELECT 
 	AUTHOR_ID, 
 	TITLE_ID,
-	SUM(ROYALTY) AS 'ROYALTY_PER_TITLE'
+	SUM(ROYALTY + advance) AS 'ROYALTY_PER_TITLE'
 	FROM 
 		(SELECT 
 		t.title_id AS 'TITLE_ID',
 		a.au_id AS 'AUTHOR_ID',
-		(t.price * sal.qty * t.royalty / 100 * ta.royaltyper / 100) AS 'ROYALTY'
+		(t.price * sal.qty * t.royalty / 100 * ta.royaltyper / 100) AS 'ROYALTY',
+        t.advance
 		FROM publications.sales AS sal
 		INNER JOIN publications.titleauthor as ta
 		ON sal.title_id = ta.title_id

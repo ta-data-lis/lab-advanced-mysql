@@ -34,8 +34,8 @@ ORDER BY SUM(ROYALTY_PER_TITLE) DESC
 LIMIT 3;
 
 /* CLEAR TEMP TABLE */
-DROP TABLE publications.royalties_per_sale;
-DROP TABLE publications.royalties_per_title;
+DROP TABLE IF EXISTS publications.royalties_per_sale;
+DROP TABLE IF EXISTS publications.royalties_per_title;
 
 
 /* CHALLENGE 2 */
@@ -66,6 +66,7 @@ LIMIT 3;
 
 
 /* CHALLENGE 3 */
+DROP TABLE IF EXISTS publications.most_profiting_authors;
 CREATE TABLE publications.most_profiting_authors (
 au_id VARCHAR(11),
 profits VARCHAR(80)

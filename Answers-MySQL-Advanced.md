@@ -87,7 +87,3 @@ SELECT *
 FROM publications.most_profitable_authors;
     
   
-           
-    
-                            
-                            

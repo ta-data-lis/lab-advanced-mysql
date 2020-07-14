@@ -4,16 +4,11 @@
 sales_royalty = titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100
 */
 
-/*
-SELECT name,
- price*quantity  AS total_price
-FROM purchase;
-*/
-
 SELECT * FROM titles;
 SELECT * FROM authors;
 SELECT * FROM titleauthor;
 SELECT * FROM sales;
+
 
 /* Solution with temporary tables */
 
@@ -33,7 +28,7 @@ ON au.au_id = ta.au_id;
 
 SELECT * FROM royalties;
 
-/* DROP TABLE royalties;  */ /*Use as needed,cannot reacreate a temp table without dropping it first */
+/* DROP TABLE royalties;  */ /*Use as needed,cannot re-create a temp table without dropping it first */
 
 /* Step 2 */
 CREATE TEMPORARY TABLE sum_royalties
@@ -61,6 +56,7 @@ SELECT * FROM sum_royalties_advance;
 
 /* DROP TABLE sum_royalties_advance; */
 
+
 /* Challenge 2 - Alternative Solution */
 /*. Sub queries */
 SELECT au.au_id AS "AUTHOR ID",
@@ -79,7 +75,7 @@ ON ta.au_id = au.au_id;
 /* Step 2 */
 SELECT `AUTHOR ID`,
 `TITLE ID`,
-SUM(`ROYALTIES PER SALE`),
+SUM(`ROYALTIES PER SALE`) AS "ROYALTIES PER TITLE",
 `ADVANCE`
 FROM (SELECT au.au_id AS "AUTHOR ID",
 t.title_id AS "TITLE ID",
@@ -97,7 +93,11 @@ GROUP BY `AUTHOR ID`, `TITLE ID`, `ADVANCE`;
 
 /* Step 3 */
 SELECT `AUTHOR ID`,
-SUM(`ROYALTIES PER SALE`) + SUM(`ADVANCE`) AS "TOTAL PROFITS"
+SUM(`ROYALTIES PER TITLE`) + SUM(`ADVANCE`) AS "TOTAL PROFITS"
+FROM (SELECT `AUTHOR ID`,
+`TITLE ID`,
+SUM(`ROYALTIES PER SALE`) AS "ROYALTIES PER TITLE",
+`ADVANCE`
 FROM (SELECT au.au_id AS "AUTHOR ID",
 t.title_id AS "TITLE ID",
 (t.price * s.qty * t.royalty / 100 * ta.royaltyper / 100) AS "ROYALTIES PER SALE",
@@ -109,6 +109,7 @@ INNER JOIN titleauthor AS ta
 ON ta.title_id = t.title_id
 INNER JOIN authors as au
 ON ta.au_id = au.au_id) summary
+GROUP BY `AUTHOR ID`, `TITLE ID`, `ADVANCE`) summary
 GROUP BY `AUTHOR ID`
 ORDER BY `TOTAL PROFITS` DESC
 LIMIT 3;
@@ -128,9 +129,15 @@ AS (SELECT * FROM sum_royalties_advance);
 
 SELECT * FROM most_profiting_authors;
 
-CREATE TABLE most_profiting_authors
+/* DROP TABLE most_profiting_authors; */
+
+CREATE TABLE most_profiting_authors2
 SELECT `AUTHOR ID`,
-SUM(`ROYALTIES PER SALE`) + SUM(`ADVANCE`) AS "TOTAL PROFITS"
+SUM(`ROYALTIES PER TITLE`) + SUM(`ADVANCE`) AS "TOTAL PROFITS"
+FROM (SELECT `AUTHOR ID`,
+`TITLE ID`,
+SUM(`ROYALTIES PER SALE`) AS "ROYALTIES PER TITLE",
+`ADVANCE`
 FROM (SELECT au.au_id AS "AUTHOR ID",
 t.title_id AS "TITLE ID",
 (t.price * s.qty * t.royalty / 100 * ta.royaltyper / 100) AS "ROYALTIES PER SALE",
@@ -142,9 +149,12 @@ INNER JOIN titleauthor AS ta
 ON ta.title_id = t.title_id
 INNER JOIN authors as au
 ON ta.au_id = au.au_id) summary
+GROUP BY `AUTHOR ID`, `TITLE ID`, `ADVANCE`) summary
 GROUP BY `AUTHOR ID`
 ORDER BY `TOTAL PROFITS` DESC
 LIMIT 3;
+
+SELECT * FROM most_profiting_authors2;
 
 
 

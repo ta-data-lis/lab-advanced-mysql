@@ -32,17 +32,32 @@ LEFT JOIN sales sales ON sales.title_id = titleauthor.title_id
 Group by 1
 ORDER by  2 DESC;
 
-#Challenge 2 Temporary table:
+#Challenge 2 Temporary table step 1:
+
+DROP TABLE sales_titles_royalties;
 
 CREATE TEMPORARY TABLE sales_titles_royalties
-SELECT titleauthor.au_id AS AuthorID, sum(titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100) + sum(titles.advance) as sales_royalty_advance from titleauthor titleauthor
+SELECT titleauthor.title_id as TitleID, titleauthor.au_id AS AuthorID, titles.price * sales.qty * titles.royalty / 100 * titleauthor.royaltyper / 100 as Royalties,  from titleauthor titleauthor
 LEFT JOIN titles titles ON titleauthor.title_id = titles.title_id 
-LEFT JOIN sales sales ON sales.title_id = titleauthor.title_id 
-Group by 1
-ORDER by  2 DESC;  
+LEFT JOIN sales sales ON sales.title_id = titleauthor.title_id
+Order by 3 desc
 
+SELECT TitleID FROM sales_titles_royalties
 
-SELECT AuthorID, sales_royalty_advance FROM sales_titles_royalties
+SELECT sales_titles_royalties.TitleID FROM sales_titles_royalties
+Group by 1,2;
+
+#Challenge 2 Temporary table step 2:
+
+CREATE TEMPORARY TABLE titles_advaced
+SELECT titleauthor.title_id as TitleID,  titles.advance as sales_royalty_advance from titleauthor titleauthor
+LEFT JOIN titles titles ON titleauthor.title_id = titles.title_id 
+
+SELECT * FROM titles_advaced
+
+SELECT TitleID, AuthorID, sum(Royalties), sales_royalty_advance  FROM sales_titles_royalties
+LEFT join titles_advaced ON titles_advaced.title_id = sales_titles_royalties.title_id
+Group by 1,2;
 
 #Challenge 3:
 

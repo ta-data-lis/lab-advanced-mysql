@@ -100,4 +100,12 @@ LIMIT 3;
 #Challenge 3, permanent table 'most_profiting_authors'
 
 
+CREATE TABLE most_profiting_authors
+AS 
+SELECT au_id, SUM(sales_royalty)+ SUM(author_advance) as profits
+FROM salesroyalties
+GROUP BY au_id;
+
+SELECT * FROM most_profiting_authors;
+
 
